@@ -1,0 +1,42 @@
+#!/bin/bash
+BIRed='\033[1;91m'        # Red
+BIGreen='\033[1;92m'      # Green
+BIYellow='\033[1;93m'     # Yellow
+BIBlue='\033[1;94m'       # Blue
+BIPurple='\033[1;95m'     # Purple
+BICyan='\033[1;96m'       # Cyan
+NORMAL="\033[0;39m"
+clear
+src=`cat /home/world/ansible/nwr/copyrunscrpt/copysrc`
+dest=`cat /home/world/ansible/nwr/copyrunscrpt/copydest`
+echo -e $BIPurple"#############################################################################" $NORMAL
+echo -e $BIGreen" Paste or type in the source directory  to copy                               " $NORMAL
+echo -e $BIPurple"#############################################################################" $NORMAL
+cat > /home/world/ansible/nwr/copyrunscrpt/copysrc
+echo -e $BIPurple"#############################################################################" $NORMAL
+echo -e $BIGreen" Paste or type in the target directory to copy into                           " $NORMAL
+echo -e $BIPurple"#############################################################################" $NORMAL
+cat > /home/world/ansible/nwr/copyrunscrpt/copydest
+chmod 777 /home/world/ansible/nwr/copyrunscrpt/copysrc
+chmod 777 /home/world/ansible/nwr/copyrunscrpt/copydest
+sleep 2
+cd /home/world/ansible/nwr/copyrunscrpt/
+sed -e '8s/$/$src/' copydir_new.yml > copydir_new1.yml
+sed -e '9s/$/$dest/' copydir_new1.yml > copydir_new2.yml
+echo -e $BIPurple"Please select your choice from below menu" $NORMAL
+echo -e $BIPurple"Press "y" if you want to run the scripts " $NORMAL
+echo -e $BIPurple"press "x" for exist" $NORMAL
+read y
+case $y in
+y)
+date > /home/world/ansible/logs/copydir.log
+ansible-playbook /home/world/ansible/nwr/copyrunscrpt/copydir_new2.yml >> /home/world/ansible/logs/copy.log
+echo -e $BIGreen"Please check for Output /home/world/ansible/logs/copy.log" $NORMAL
+;;
+x)
+exit
+;;
+*)
+  echo "Invalid input , Please enter correct choice "
+;;
+esac

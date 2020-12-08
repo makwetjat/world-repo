@@ -1,0 +1,4 @@
+#!/bin/bash
+cd /home/world/ansible/nwr/adhoc_health/
+ansible-playbook pre_valid_scri_new.yml
+

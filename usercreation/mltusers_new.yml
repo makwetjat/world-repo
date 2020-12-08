@@ -1,0 +1,31 @@
+---
+- hosts: prod 
+  become: true
+  become_user: root
+
+  tasks:
+    - name: create directory
+      command: mkdir -p /tmp/appsrc
+    
+    - name: Transfer the script
+      copy: src=/home/world/ansible/nwr/usercreation/multiple-users/sec-mipit.user dest=/tmp/appsrc mode=0777
+      register: result_copy
+    - name: Transfer the script
+      copy: src=/home/world/ansible/nwr/usercreation/multiple-users/sec-mipit.pswd dest=/tmp/appsrc mode=0777
+      register: result_copy
+
+    - name: Transfer the script
+      copy: src=/home/world/ansible/nwr/usercreation/multiple-users/pro-sec-import dest=/tmp/appsrc mode=0777
+      register: result_copy
+   
+    - name: Execute user creation script
+      command: sh /dbbackup/appsrc/pro-sec-import
+      register: usercreate_check
+    - debug: msg="Users successfully created"
+      when: usercreate_check.rc == 0
+    
+    - name: remove the scripts on managed hosts
+      command: rm -rf /tmp/appsrc
+      register: delscripts_check
+    - debug: msg="scripts deleted on managed hosts"
+      when: delscripts_check.rc == 0

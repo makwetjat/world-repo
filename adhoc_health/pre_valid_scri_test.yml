@@ -1,0 +1,13 @@
+---
+- hosts: webservers
+  tasks:
+    - name: Executing of Pre-Validation Scripts
+      script: /home/world/ansible/nwr/adhoc_health/performance.sh
+      register: output
+    - name: Fetching the Inventory Report
+      fetch:
+       src: /tmp/perflog/serverperf.log
+       dest: /home/world/ansible/nwr/adhoc_health/details/healthreport-{{ inventory_hostname }}
+       flat: yes
+    - debug:
+       msg: "Health Report has been copied to /home/world/ansible/nwr/prevalidation/details" 

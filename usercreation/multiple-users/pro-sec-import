@@ -1,0 +1,71 @@
+:
+# @(#)  pro-sec-import
+#
+#       (c) Copyright 1990 - 2016
+#       MIP Holdings Pty (Ltd)
+#       All rights reserved
+
+TSECNOW=`date '+%H'`
+
+TDEFOWN="mipit"
+
+TSECOWN=${1:-${TDEFOWN}}
+
+TSECGET=/tmp/appsrc/sec-${TSECOWN}.list
+TSECUSR=/tmp/appsrc/sec-${TSECOWN}.user
+TSECENC=/tmp/appsrc/sec-${TSECOWN}.pswd
+
+TSECLOG=/var/log/pro-sec-import.log
+
+echo "`date` [SEC] Starting" >> ${TSECLOG}
+
+if [ -f ${TSECUSR} ]
+then
+
+  echo "`date` [SEC] Importing Secure/Passwd" >> ${TSECLOG}
+
+  za_line=0
+  while read -r za_text
+  do
+
+    za_line=`expr ${za_line} + 1`
+    za_user=`echo "${za_text}" | awk -F: '{ print $1 }'`
+    za_uuid=`echo "${za_text}" | awk -F: '{ print $3 }'`
+    za_ngrp=`echo "${za_text}" | awk -F: '{ print $4 }'`
+    za_ugrp=${za_ngrp}
+    za_name=`echo "${za_text}" | awk -F: '{ print $5 }'`
+    za_path=`echo "${za_text}" | awk -F: '{ print $6 }'`
+    za_shel=`echo "${za_text}" | awk -F: '{ print $7 }'`
+
+    za_stat="ABC"
+    za_pswd=`grep "^${za_user}:" ${TSECENC} | tail -1 | awk -F: '{ print $2 }'`
+
+    if [ `grep "^${za_user}:" /etc/passwd | wc -l` -ge 1 ] ;
+    then # User Exists
+
+      za_stat="UPD"
+      /usr/sbin/usermod -p ${za_pswd} ${za_user}
+
+    else # User NEW
+
+      za_stat="NEW"
+      /usr/sbin/useradd -g ${za_ugrp} -c "${za_name}" -d ${za_path} -m -s ${za_shel} -p ${za_pswd} ${za_user}
+
+    fi #
+
+    echo "`date` [SEC] [ ${za_line} ${za_stat} ] ${za_user}" >> ${TSECLOG}
+   #echo "`date` [SEC] [ ${za_line} ${za_stat} ] ${za_user}"
+
+  done <${TSECUSR}
+
+  echo "`date` [SEC] Complete" >> ${TSECLOG}
+
+else
+
+  echo "`date` [SEC] Failed (${TSECUSR})" >> ${TSECLOG}
+  echo "`date` [SEC] Failed (${TSECUSR})"
+
+fi
+
+# The End !!!
+

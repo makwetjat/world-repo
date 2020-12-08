@@ -1,0 +1,14 @@
+---
+- hosts: webservers
+  tasks:
+   - name: Executing the Scripts
+     script: /home/world/ansible/nwr/adhoc_health/performance.sh
+     register: output
+   - name: Fetching the health Report
+     fetch:
+       src: /tmp/perflog/serverperf.log
+       dest: /home/world/ansible/nwr/adhoc_health/details1/healthreport-{{ inventory_hostname }}
+       flat: yes
+   - debug:
+       msg: "Health report has been copied to /home/world/ansible/nwr/adhoc_health/details1"
+

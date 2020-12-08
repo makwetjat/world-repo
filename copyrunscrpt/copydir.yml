@@ -1,0 +1,11 @@
+---
+- hosts: abcz
+  become: true
+  become_user: root
+  tasks:
+    - name: Copy directory
+      copy: 
+       src=
+       dest=
+      register: result_copy
+

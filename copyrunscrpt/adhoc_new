@@ -1,0 +1,1 @@
+ansible test -m command -a "init 0" -b -K

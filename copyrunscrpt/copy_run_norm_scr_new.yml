@@ -1,0 +1,11 @@
+---
+- hosts: all
+  tasks:
+    - name: Transfer the script
+      copy: src=/tmp/bash_co dest=/tmp/bash_co mode=0777
+      register: result_copy
+
+    - name: Execute the script and verification script
+      command: sh /tmp/bash_co > /tmp/bash_co.log
+      register: result_run
+    - debug: var=result_run.stdout_lines
