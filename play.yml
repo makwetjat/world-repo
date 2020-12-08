@@ -3,11 +3,26 @@
   become: true
   become_user: root
   vars:
-    userid: adabas
+    password: $6$2u.MW22rkemc1XqT$c7GqRxtGZ9s1d5on7wyiThhEguGgctoLW.X2CZS21Etgea2.l0UnU8YxDm2/uhSiVatSUwa0yhzyXxbzSAOXC/
+    userid: 10212
+    sgrp: wheel
+    comments: testing
+    username: testing
+    pgrp: progress
+    hme: /home/testing
   tasks:
   - name: User Exist
-    shell: id {{ userid }}
+    shell: id {{ username }}
     register: user_exist
-  - name: echo
-    debug:
-     msg: "{{ user_exist.stdout }}"
+    ignore_errors: yes
+  - debug: msg="User Name {{ username }} is already existing  on {{ ansible_hostname }}"
+    when: user_exist.rc == 0
+
+  - name: User Creation
+    user: name={{ username }} uid={{ userid }} home={{ hme }} comment={{ comments }} password={{ password }} group={{pgrp}} groups={{ sgrp }} append=yes
+    when: user_exist.rc != 0
+    register: usercreation
+  - debug: msg="User Name {{ username }} has been created on {{ ansible_hostname }}"
+    when: usercreation.changed
+
+
